@@ -1,0 +1,7 @@
+.git/
+node_modules/
+shopsense-ai/node_modules/
+shopsense-ai/.next/
+**/.env*
+.vscode/
+.idea/
