@@ -4,6 +4,7 @@ import { getFirebaseClientDb } from '@/lib/gcp/firebaseClient';
 
 export async function upsertUserProfile(user: User): Promise<void> {
   const db = getFirebaseClientDb();
+  if (!db) return;
 
   await setDoc(
     doc(db, 'users', user.uid),

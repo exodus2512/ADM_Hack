@@ -13,20 +13,36 @@ const firebaseConfig = {
   measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
 };
 
+export function isFirebaseClientConfigured() {
+  return Boolean(
+    firebaseConfig.apiKey &&
+      firebaseConfig.authDomain &&
+      firebaseConfig.projectId &&
+      firebaseConfig.appId,
+  );
+}
+
 export function getFirebaseClientApp() {
+  if (!isFirebaseClientConfigured()) return null;
   return getApps().length ? getApp() : initializeApp(firebaseConfig);
 }
 
 export function getFirebaseClientAuth() {
-  return getAuth(getFirebaseClientApp());
+  const app = getFirebaseClientApp();
+  if (!app) return null;
+  return getAuth(app);
 }
 
 export function getFirebaseClientDb() {
-  return getFirestore(getFirebaseClientApp());
+  const app = getFirebaseClientApp();
+  if (!app) return null;
+  return getFirestore(app);
 }
 
 export async function getFirebaseClientAnalytics() {
   if (typeof window === 'undefined') return null;
+  const app = getFirebaseClientApp();
+  if (!app) return null;
   if (!(await isSupported())) return null;
-  return getAnalytics(getFirebaseClientApp());
+  return getAnalytics(app);
 }

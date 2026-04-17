@@ -71,6 +71,11 @@ export const useAuthStore = create<AuthStore>((set) => ({
     if (unsubscribeAuth) return unsubscribeAuth;
 
     const auth = getFirebaseClientAuth();
+    if (!auth) {
+      set({ user: null, initializing: false, error: null });
+      return () => {};
+    }
+
     unsubscribeAuth = onAuthStateChanged(auth, async (firebaseUser) => {
       if (!firebaseUser) {
         set({ user: null, initializing: false, error: null });
@@ -90,6 +95,12 @@ export const useAuthStore = create<AuthStore>((set) => ({
   },
   signInWithGoogle: async () => {
     const auth = getFirebaseClientAuth();
+    if (!auth) {
+      const message = 'Firebase is not configured. Add NEXT_PUBLIC_FIREBASE_* variables in .env.local.';
+      set({ error: message });
+      throw new Error(message);
+    }
+
     const provider = new GoogleAuthProvider();
 
     try {
@@ -102,6 +113,11 @@ export const useAuthStore = create<AuthStore>((set) => ({
   },
   signInWithEmail: async (email, password) => {
     const auth = getFirebaseClientAuth();
+    if (!auth) {
+      const message = 'Firebase is not configured. Add NEXT_PUBLIC_FIREBASE_* variables in .env.local.';
+      set({ error: message });
+      throw new Error(message);
+    }
 
     try {
       await signInWithEmailAndPassword(auth, email, password);
@@ -113,6 +129,11 @@ export const useAuthStore = create<AuthStore>((set) => ({
   },
   signUpWithEmail: async (email, password) => {
     const auth = getFirebaseClientAuth();
+    if (!auth) {
+      const message = 'Firebase is not configured. Add NEXT_PUBLIC_FIREBASE_* variables in .env.local.';
+      set({ error: message });
+      throw new Error(message);
+    }
 
     try {
       await createUserWithEmailAndPassword(auth, email, password);
@@ -124,6 +145,10 @@ export const useAuthStore = create<AuthStore>((set) => ({
   },
   signOutUser: async () => {
     const auth = getFirebaseClientAuth();
+    if (!auth) {
+      set({ error: null });
+      return;
+    }
 
     try {
       await signOut(auth);
